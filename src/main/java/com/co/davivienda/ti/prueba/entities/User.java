@@ -16,6 +16,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * User entity class representing a user in the system.
+ * This class is annotated with JPA annotations to map it to the database table "user".
+ * It contains fields for user attributes and relationships with other entities.
+ * 
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 @Data
 @Entity
 @Builder
