@@ -1,6 +1,7 @@
 package com.co.davivienda.ti.prueba.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,5 +26,12 @@ public class ReservationController {
             @PathVariable String userId,
             @RequestBody ReservationCreateDTO reservationCreateDTO) {
         return reservationService.createReservation(userId, reservationCreateDTO);
+    }
+
+    @DeleteMapping("/{userId}/{reservationId}")
+    public ResponseEntity<ReservationResponse> deleteReservation(
+            @PathVariable String userId,
+            @PathVariable Long reservationId) {
+        return reservationService.deleteReservation(userId, reservationId);
     }
 }
