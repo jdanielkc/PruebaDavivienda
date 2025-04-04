@@ -1,4 +1,4 @@
-package com.co.davivienda.ti.prueba.security;
+package com.co.davivienda.ti.prueba.security.filters;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,14 +19,14 @@ public class SpringSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/davi-events/users/register").permitAll()
-                        .requestMatchers("/api/davi-events/users/login").permitAll()
-                        .requestMatchers("/api/davi-events/events/**").permitAll()
+                        .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/users/login").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
