@@ -292,4 +292,77 @@ public class EventService implements IEventService {
                             .build());
         }
     }
+
+    /**
+     * Deletes an event by its ID.
+     * Validates the user ID before deleting the event.
+     *
+     * @param userId  The ID of the user requesting the deletion.
+     * @param eventId The ID of the event to delete.
+     * @return A ResponseEntity containing success message or error information.
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<EventResponse> deleteEvent(String userId, Long eventId) {
+        try {
+            // Validations
+            Optional<ResponseEntity<EventResponse>> validationError = validateUserIdForEvent(userId);
+            if (validationError.isPresent()) {
+                return validationError.get();
+            }
+
+            Long userIdLong = Long.parseLong(userId);
+            if (!userRepository.existsById(userIdLong)) {
+                log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(EventResponse.builder()
+                                .showMessage(true)
+                                .message(ERROR_USER_NOT_FOUND)
+                                .build());
+            }
+
+            // Get event by ID
+            Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+            if (eventOptional.isEmpty()) {
+                String errorMessage = "Evento no encontrado con ID: " + eventId;
+                log.warn(errorMessage);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(EventResponse.builder()
+                                .showMessage(true)
+                                .message(errorMessage)
+                                .build());
+            }
+
+            // Delete event
+            Event event = eventOptional.get();
+
+            // Check if the event has reservations associated with it
+            if (event.getReservations() != null && !event.getReservations().isEmpty()) {
+                String errorMessage = "No se puede eliminar el evento porque tiene reservas asociadas";
+                log.warn(errorMessage + " - Evento ID: {}", eventId);
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(EventResponse.builder()
+                                .showMessage(true)
+                                .message(errorMessage)
+                                .build());
+            }
+
+            // Delete the event
+            eventRepository.delete(event);
+
+            return ResponseEntity.ok(EventResponse.builder()
+                    .showMessage(true)
+                    .message("Evento eliminado exitosamente")
+                    .build());
+
+        } catch (Exception e) {
+            log.error("Error al eliminar el evento con ID: " + eventId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(EventResponse.builder()
+                            .showMessage(true)
+                            .message("Error al eliminar el evento")
+                            .build());
+        }
+    }
 }

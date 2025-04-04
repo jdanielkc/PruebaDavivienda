@@ -17,4 +17,7 @@ public interface IEventService {
     
     @Transactional
     public ResponseEntity<EventResponse> updateEvent(String userId, Long eventId, EventUpdateDTO eventUpdateDTO);
+    
+    @Transactional
+    public ResponseEntity<EventResponse> deleteEvent(String userId, Long eventId);
 }
