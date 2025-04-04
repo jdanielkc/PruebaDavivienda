@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.co.davivienda.ti.prueba.entities.Event;
 import com.co.davivienda.ti.prueba.models.dto.EventDTO;
 import com.co.davivienda.ti.prueba.models.response.AllEventsResponse;
+import com.co.davivienda.ti.prueba.models.response.EventResponse;
 import com.co.davivienda.ti.prueba.repositories.EventRepository;
 import com.co.davivienda.ti.prueba.repositories.UserRepository;
 
@@ -111,6 +112,87 @@ public class EventService implements IEventService {
             log.warn(ERROR_INVALID_USER_ID + ": {}", userId);
             return Optional.of(ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(AllEventsResponse.builder()
+                            .showMessage(true)
+                            .message(ERROR_INVALID_USER_ID)
+                            .build()));
+        }
+    }
+
+    /**
+     * Retrieves an event by its ID and user ID, returning it in a response entity.
+     * Validates the user ID before fetching the event.
+     *
+     * @param userId  The ID of the user requesting the event.
+     * @param eventId The ID of the event to retrieve.
+     * @return A ResponseEntity containing the event or an error message.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<EventResponse> getEventById(String userId, Long eventId) {
+        try {
+            // Validations
+            Optional<ResponseEntity<EventResponse>> validationError = validateUserIdForEvent(userId);
+            if (validationError.isPresent()) {
+                return validationError.get();
+            }
+
+            Long userIdLong = Long.parseLong(userId);
+            if (!userRepository.existsById(userIdLong)) {
+                log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(EventResponse.builder()
+                                .showMessage(true)
+                                .message(ERROR_USER_NOT_FOUND)
+                                .build());
+            }
+
+            // Get event by ID
+            Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+            if (eventOptional.isEmpty()) {
+                String errorMessage = "Evento no encontrado con ID: " + eventId;
+                log.warn(errorMessage);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(EventResponse.builder()
+                                .showMessage(true)
+                                .message(errorMessage)
+                                .build());
+            }
+
+            // Convert event to DTO
+            EventDTO eventDTO = convertToDTO(eventOptional.get());
+
+            // Build and return the response
+            return ResponseEntity.ok(EventResponse.builder()
+                    .event(eventDTO)
+                    .showMessage(false)
+                    .build());
+
+        } catch (Exception e) {
+            log.error("Error al obtener el evento con ID: " + eventId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(EventResponse.builder()
+                            .showMessage(true)
+                            .message("Error al obtener el evento")
+                            .build());
+        }
+    }
+
+    /**
+     * Validates and parses the user ID from string to Long for event operations.
+     *
+     * @param userId The user ID as string to validate.
+     * @return Optional containing error response if validation fails, or empty if
+     *         successful.
+     */
+    private Optional<ResponseEntity<EventResponse>> validateUserIdForEvent(String userId) {
+        try {
+            Long.parseLong(userId);
+            return Optional.empty();
+        } catch (NumberFormatException e) {
+            log.warn(ERROR_INVALID_USER_ID + ": {}", userId);
+            return Optional.of(ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(EventResponse.builder()
                             .showMessage(true)
                             .message(ERROR_INVALID_USER_ID)
                             .build()));
