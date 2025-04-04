@@ -1,6 +1,5 @@
 package com.co.davivienda.ti.prueba.entities;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,18 +15,30 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * User entity class representing a user in the system.
+ * This class is annotated with JPA annotations to map it to the database table "user".
+ * It contains fields for user attributes and relationships with other entities.
+ * 
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private BigInteger id;
+    private Long id;
+
+    @Column(name = "email", unique = true)
+    private String email;
 
     @Column(name = "first_name")
     private String firstName;

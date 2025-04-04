@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Excluir falsos positivos comunes en Spring Boot -->
+    <Match>
+        <Class name="~.*\$\$EnhancerBySpringCGLIB\$\$.*" />
+    </Match>
+    <Match>
+        <Class name="~.*\$\$FastClassBySpringCGLIB\$\$.*" />
+    </Match>
+
+    <!-- Excluir errores en código generado por Lombok -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP, EI_EXPOSE_REP2" />
+        <Source name="~.*\.java" />
+    </Match>
+
+    <!-- Añade aquí más exclusiones específicas según sea necesario -->
+</FindBugsFilter>
