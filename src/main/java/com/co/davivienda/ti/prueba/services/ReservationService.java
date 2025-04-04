@@ -1,6 +1,7 @@
 package com.co.davivienda.ti.prueba.services;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import com.co.davivienda.ti.prueba.entities.Reservation;
 import com.co.davivienda.ti.prueba.entities.User;
 import com.co.davivienda.ti.prueba.models.dto.ReservationCreateDTO;
 import com.co.davivienda.ti.prueba.models.dto.ReservationDTO;
+import com.co.davivienda.ti.prueba.models.response.AllReservationsResponse;
 import com.co.davivienda.ti.prueba.models.response.ReservationResponse;
 import com.co.davivienda.ti.prueba.repositories.EventRepository;
 import com.co.davivienda.ti.prueba.repositories.ReservationRepository;
@@ -240,6 +242,126 @@ public class ReservationService implements IReservationService {
                                         .body(ReservationResponse.builder()
                                                         .showMessage(true)
                                                         .message("Error al eliminar la reserva")
+                                                        .build());
+                }
+        }
+
+        /**
+         * Gets all reservations for a user.
+         * Validates the user ID before fetching the reservations.
+         *
+         * @param userId The ID of the user requesting the reservations.
+         * @return A ResponseEntity containing the list of reservations or an error
+         *         message.
+         */
+        @Override
+        @Transactional(readOnly = true)
+        public ResponseEntity<AllReservationsResponse> getUserReservations(String userId) {
+                try {
+                        // Validate User ID
+                        Optional<ResponseEntity<ReservationResponse>> userValidationError = validateUserId(userId);
+                        if (userValidationError.isPresent()) {
+                                return ResponseEntity.status(userValidationError.get().getStatusCode())
+                                                .body(AllReservationsResponse.builder()
+                                                                .showMessage(true)
+                                                                .message(userValidationError.get().getBody()
+                                                                                .getMessage())
+                                                                .build());
+                        }
+
+                        Long userIdLong = Long.parseLong(userId);
+                        User user = userRepository.findById(userIdLong).orElse(null);
+                        if (user == null) {
+                                log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body(AllReservationsResponse.builder()
+                                                                .showMessage(true)
+                                                                .message(ERROR_USER_NOT_FOUND)
+                                                                .build());
+                        }
+
+                        // Get reservations
+                        List<Reservation> reservations = reservationRepository
+                                        .findByUserIdOrderByReservationDateDesc(userIdLong);
+
+                        // Convert to DTOs
+                        List<ReservationDTO> reservationDTOs = reservations.stream()
+                                        .map(this::convertToDTO).toList();
+
+                        // Return response
+                        return ResponseEntity.ok(AllReservationsResponse.builder()
+                                        .reservations(reservationDTOs)
+                                        .showMessage(false)
+                                        .build());
+
+                } catch (Exception e) {
+                        log.error("Error al obtener reservas del usuario con ID: " + userId, e);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body(AllReservationsResponse.builder()
+                                                        .showMessage(true)
+                                                        .message("Error al obtener reservas")
+                                                        .build());
+                }
+        }
+
+        /**
+         * Gets a specific reservation for a user.
+         * Validates the user ID and checks if the reservation belongs to the user.
+         *
+         * @param userId        The ID of the user requesting the reservation.
+         * @param reservationId The ID of the reservation to retrieve.
+         * @return A ResponseEntity containing the reservation or an error message.
+         */
+        @Override
+        @Transactional(readOnly = true)
+        public ResponseEntity<ReservationResponse> getUserReservationById(String userId, Long reservationId) {
+                try {
+                        // Validate User ID
+                        Optional<ResponseEntity<ReservationResponse>> userValidationError = validateUserId(userId);
+                        if (userValidationError.isPresent()) {
+                                return userValidationError.get();
+                        }
+
+                        Long userIdLong = Long.parseLong(userId);
+                        User user = userRepository.findById(userIdLong).orElse(null);
+                        if (user == null) {
+                                log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body(ReservationResponse.builder()
+                                                                .showMessage(true)
+                                                                .message(ERROR_USER_NOT_FOUND)
+                                                                .build());
+                        }
+
+                        // Find reservation by id and user id
+                        Optional<Reservation> reservationOptional = reservationRepository
+                                        .findByIdAndUserId(reservationId, userIdLong);
+
+                        if (reservationOptional.isEmpty()) {
+                                String errorMessage = "Reserva no encontrada o no pertenece al usuario";
+                                log.warn(errorMessage + " - Usuario ID: {}, Reserva ID: {}", userId, reservationId);
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body(ReservationResponse.builder()
+                                                                .showMessage(true)
+                                                                .message(errorMessage)
+                                                                .build());
+                        }
+
+                        // Convert to DTO
+                        ReservationDTO reservationDTO = convertToDTO(reservationOptional.get());
+
+                        // Return response
+                        return ResponseEntity.ok(ReservationResponse.builder()
+                                        .reservation(reservationDTO)
+                                        .showMessage(false)
+                                        .build());
+
+                } catch (Exception e) {
+                        log.error("Error al obtener la reserva con ID: " + reservationId, e);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body(ReservationResponse.builder()
+                                                        .showMessage(true)
+                                                        .message("Error al obtener la reserva")
                                                         .build());
                 }
         }
