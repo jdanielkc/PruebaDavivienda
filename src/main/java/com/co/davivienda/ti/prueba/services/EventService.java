@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.co.davivienda.ti.prueba.entities.Event;
+import com.co.davivienda.ti.prueba.models.dto.EventCreateDTO;
 import com.co.davivienda.ti.prueba.models.dto.EventDTO;
 import com.co.davivienda.ti.prueba.models.dto.EventUpdateDTO;
 import com.co.davivienda.ti.prueba.models.response.AllEventsResponse;
@@ -362,6 +363,82 @@ public class EventService implements IEventService {
                     .body(EventResponse.builder()
                             .showMessage(true)
                             .message("Error al eliminar el evento")
+                            .build());
+        }
+    }
+
+    /**
+     * Creates a new event with the provided data.
+     * Validates the user ID before creating the event.
+     *
+     * @param userId         The ID of the user creating the event.
+     * @param eventCreateDTO Data for the new event.
+     * @return A ResponseEntity containing the created event or an error message.
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<EventResponse> createEvent(String userId, EventCreateDTO eventCreateDTO) {
+        try {
+            // Validations
+            Optional<ResponseEntity<EventResponse>> validationError = validateUserIdForEvent(userId);
+            if (validationError.isPresent()) {
+                return validationError.get();
+            }
+
+            Long userIdLong = Long.parseLong(userId);
+            if (!userRepository.existsById(userIdLong)) {
+                log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(EventResponse.builder()
+                                .showMessage(true)
+                                .message(ERROR_USER_NOT_FOUND)
+                                .build());
+            }
+
+            // Validate required fields
+            if (eventCreateDTO.getTitle() == null || eventCreateDTO.getTitle().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(EventResponse.builder()
+                                .showMessage(true)
+                                .message("El título del evento es obligatorio")
+                                .build());
+            }
+
+            // Create new event
+            Event newEvent = Event.builder()
+                    .title(eventCreateDTO.getTitle())
+                    .description(eventCreateDTO.getDescription())
+                    .eventDate(eventCreateDTO.getEventDate())
+                    .location(eventCreateDTO.getLocation())
+                    .capacity(eventCreateDTO.getCapacity())
+                    .createDate(LocalDate.now())
+                    .updateDate(LocalDate.now())
+                    .build();
+
+            // Set category if provided
+            if (eventCreateDTO.getCategoryId() != null) {
+                newEvent.setCategory(categoryRepository.findById(eventCreateDTO.getCategoryId()).orElse(null));
+            }
+
+            // Save new event
+            Event savedEvent = eventRepository.save(newEvent);
+
+            // Convert to DTO and return
+            EventDTO eventDTO = convertToDTO(savedEvent);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(EventResponse.builder()
+                            .event(eventDTO)
+                            .showMessage(true)
+                            .message("Evento creado exitosamente")
+                            .build());
+
+        } catch (Exception e) {
+            log.error("Error al crear el evento", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(EventResponse.builder()
+                            .showMessage(true)
+                            .message("Error al crear el evento")
                             .build());
         }
     }
