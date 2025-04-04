@@ -39,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService implements IUserService {
 
     private static final String USER_EXISTS_MESSAGE = "El usuario con este correo ya está registrado";
+    private static final String USER_NO_EXISTS_MESSAGE = "El usuario con este NO correo ya está registrado";
     private static final String USER_CREATED_MESSAGE = "Usuario registrado exitosamente";
     private static final String INVALID_EMAIL_FORMAT = "El formato del correo electrónico no es válido";
     private static final String FIELDS_REQUIRED = "Todos los campos son requeridos";
@@ -141,6 +142,20 @@ public class UserService implements IUserService {
     }
 
     /**
+     * Creates an error response for user login.
+     * 
+     * @param message The error message to include in the response.
+     * @return A ResponseEntity containing UserLoginResponse object indicating
+     *         failure.
+     */
+    private ResponseEntity<UserLoginResponse> createErrorResponseLogin(String message) {
+        return ResponseEntity.status(CONFLICT).body(UserLoginResponse.builder()
+                .showMessage(true)
+                .message(message)
+                .build());
+    }
+
+    /**
      * Checks if a user with the given email already exists in the system.
      * 
      * @param email The email address to check.
@@ -153,49 +168,55 @@ public class UserService implements IUserService {
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<UserLoginResponse> loginUser(UserLoginRequest request) {
+
+        if (!isUserExists(request.getEmail())) {
+            return createErrorResponseLogin(USER_NO_EXISTS_MESSAGE);
+        }
+
         try {
-        if (request == null || !StringUtils.hasText(request.getEmail()) || !StringUtils.hasText(request.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            if (request == null || !StringUtils.hasText(request.getEmail())
+                    || !StringUtils.hasText(request.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(UserLoginResponse.builder()
+                                .showMessage(true)
+                                .message("Email y contraseña son requeridos")
+                                .build());
+            }
+
+            var userOptional = userRepository.findByEmail(request.getEmail());
+            if (userOptional.isEmpty()
+                    || !passwordEncoder.matches(request.getPassword(), userOptional.get().getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserLoginResponse.builder()
+                                .showMessage(true)
+                                .message("Credenciales inválidas")
+                                .build());
+            }
+
+            var user = userOptional.get();
+
+            // Generar token JWT
+            String token = jwtService.generateToken(user.getEmail());
+
+            // Crear respuesta exitosa
+            return ResponseEntity.ok(UserLoginResponse.builder()
+                    .showMessage(true)
+                    .message("Inicio de sesión exitoso")
+                    .token(token)
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .userId(user.getId())
+                    .build());
+
+        } catch (Exception e) {
+            log.error("Error durante el login del usuario", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(UserLoginResponse.builder()
                             .showMessage(true)
-                            .message("Email y contraseña son requeridos")
+                            .message("Error en el servidor. Intente nuevamente más tarde")
                             .build());
         }
-
-        var userOptional = userRepository.findByEmail(request.getEmail());
-        if (userOptional.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOptional.get().getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserLoginResponse.builder()
-                            .showMessage(true)
-                            .message("Credenciales inválidas")
-                            .build());
-        }
-
-        var user = userOptional.get();
-        
-        // Generar token JWT
-        String token = jwtService.generateToken(user.getEmail());
-        
-        // Crear respuesta exitosa
-        return ResponseEntity.ok(UserLoginResponse.builder()
-                .showMessage(true)
-                .message("Inicio de sesión exitoso")
-                .token(token)
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .userId(user.getId())
-                .build());
-        
-    } catch (Exception e) {
-        log.error("Error durante el login del usuario", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(UserLoginResponse.builder()
-                        .showMessage(true)
-                        .message("Error en el servidor. Intente nuevamente más tarde")
-                        .build());
-    }
     }
 
-    
 }
