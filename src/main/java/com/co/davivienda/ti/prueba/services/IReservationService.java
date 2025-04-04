@@ -9,5 +9,9 @@ import com.co.davivienda.ti.prueba.models.response.ReservationResponse;
 public interface IReservationService {
 
     @Transactional
-    public ResponseEntity<ReservationResponse> createReservation(String userId, ReservationCreateDTO reservationCreateDTO);
+    public ResponseEntity<ReservationResponse> createReservation(String userId,
+            ReservationCreateDTO reservationCreateDTO);
+
+    @Transactional
+    public ResponseEntity<ReservationResponse> deleteReservation(String userId, Long reservationId);
 }
