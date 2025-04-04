@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.co.davivienda.ti.prueba.models.response.AllEventsResponse;
+import com.co.davivienda.ti.prueba.models.response.EventResponse;
 import com.co.davivienda.ti.prueba.services.IEventService;
 
 import lombok.AllArgsConstructor;
@@ -23,4 +24,10 @@ public class EventController {
         return eventService.getAllEvents(userId);
     }
 
+    @GetMapping("/{userId}/{eventId}")
+    public ResponseEntity<EventResponse> getEventById(
+            @PathVariable String userId,
+            @PathVariable Long eventId) {
+        return eventService.getEventById(userId, eventId);
+    }
 }
