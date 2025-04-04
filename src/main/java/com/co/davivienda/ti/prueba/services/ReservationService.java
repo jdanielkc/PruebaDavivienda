@@ -14,6 +14,7 @@ import com.co.davivienda.ti.prueba.entities.Reservation;
 import com.co.davivienda.ti.prueba.entities.User;
 import com.co.davivienda.ti.prueba.models.dto.ReservationCreateDTO;
 import com.co.davivienda.ti.prueba.models.dto.ReservationDTO;
+import com.co.davivienda.ti.prueba.models.dto.ReservationUpdateDTO;
 import com.co.davivienda.ti.prueba.models.response.AllReservationsResponse;
 import com.co.davivienda.ti.prueba.models.response.ReservationResponse;
 import com.co.davivienda.ti.prueba.repositories.EventRepository;
@@ -362,6 +363,82 @@ public class ReservationService implements IReservationService {
                                         .body(ReservationResponse.builder()
                                                         .showMessage(true)
                                                         .message("Error al obtener la reserva")
+                                                        .build());
+                }
+        }
+
+        /**
+         * Updates an existing reservation with the provided data.
+         * Validates the user ID and checks if the reservation belongs to the user.
+         *
+         * @param userId               The ID of the user requesting the update.
+         * @param reservationId        The ID of the reservation to update.
+         * @param reservationUpdateDTO Data with which to update the reservation.
+         * @return A ResponseEntity containing the updated reservation or an error
+         *         message.
+         */
+        @Override
+        @Transactional
+        public ResponseEntity<ReservationResponse> updateReservation(String userId, Long reservationId,
+                        ReservationUpdateDTO reservationUpdateDTO) {
+                try {
+                        // Validate User ID
+                        Optional<ResponseEntity<ReservationResponse>> userValidationError = validateUserId(userId);
+                        if (userValidationError.isPresent()) {
+                                return userValidationError.get();
+                        }
+
+                        Long userIdLong = Long.parseLong(userId);
+                        User user = userRepository.findById(userIdLong).orElse(null);
+                        if (user == null) {
+                                log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body(ReservationResponse.builder()
+                                                                .showMessage(true)
+                                                                .message(ERROR_USER_NOT_FOUND)
+                                                                .build());
+                        }
+
+                        // Find reservation by id and user id
+                        Optional<Reservation> reservationOptional = reservationRepository
+                                        .findByIdAndUserId(reservationId, userIdLong);
+
+                        if (reservationOptional.isEmpty()) {
+                                String errorMessage = "Reserva no encontrada o no pertenece al usuario";
+                                log.warn(errorMessage + " - Usuario ID: {}, Reserva ID: {}", userId, reservationId);
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body(ReservationResponse.builder()
+                                                                .showMessage(true)
+                                                                .message(errorMessage)
+                                                                .build());
+                        }
+
+                        // Update reservation
+                        Reservation reservation = reservationOptional.get();
+
+                        if (reservationUpdateDTO.getStatus() != null && !reservationUpdateDTO.getStatus().isEmpty()) {
+                                reservation.setStatus(reservationUpdateDTO.getStatus());
+                        }
+
+                        // Save updated reservation
+                        Reservation updatedReservation = reservationRepository.save(reservation);
+
+                        // Convert to DTO
+                        ReservationDTO reservationDTO = convertToDTO(updatedReservation);
+
+                        // Return response
+                        return ResponseEntity.ok(ReservationResponse.builder()
+                                        .reservation(reservationDTO)
+                                        .showMessage(true)
+                                        .message("Reserva actualizada exitosamente")
+                                        .build());
+
+                } catch (Exception e) {
+                        log.error("Error al actualizar la reserva con ID: " + reservationId, e);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body(ReservationResponse.builder()
+                                                        .showMessage(true)
+                                                        .message("Error al actualizar la reserva")
                                                         .build());
                 }
         }
