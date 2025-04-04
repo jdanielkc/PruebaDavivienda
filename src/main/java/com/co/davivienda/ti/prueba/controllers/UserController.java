@@ -10,7 +10,7 @@ import com.co.davivienda.ti.prueba.models.request.UserLoginRequest;
 import com.co.davivienda.ti.prueba.models.request.UserRegisterRequest;
 import com.co.davivienda.ti.prueba.models.response.UserLoginResponse;
 import com.co.davivienda.ti.prueba.models.response.UserRegisterResponse;
-import com.co.davivienda.ti.prueba.services.UserService;
+import com.co.davivienda.ti.prueba.services.IUserService;
 
 import lombok.AllArgsConstructor;
 
@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService;
+    private final IUserService userService;
 
     /**
      * Endpoint to register a new user.
