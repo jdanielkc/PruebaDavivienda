@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.time.LocalDate;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,12 @@ import org.springframework.util.StringUtils;
 
 import com.co.davivienda.ti.prueba.entities.User;
 import com.co.davivienda.ti.prueba.exceptions.InvalidRequestException;
+import com.co.davivienda.ti.prueba.models.request.UserLoginRequest;
 import com.co.davivienda.ti.prueba.models.request.UserRegisterRequest;
+import com.co.davivienda.ti.prueba.models.response.UserLoginResponse;
 import com.co.davivienda.ti.prueba.models.response.UserRegisterResponse;
 import com.co.davivienda.ti.prueba.repositories.UserRepository;
+import com.co.davivienda.ti.prueba.security.JwtService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +46,7 @@ public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     /**
      * Registers a new user in the system.
@@ -143,6 +148,52 @@ public class UserService implements IUserService {
      */
     private boolean isUserExists(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<UserLoginResponse> loginUser(UserLoginRequest request) {
+        try {
+        if (request == null || !StringUtils.hasText(request.getEmail()) || !StringUtils.hasText(request.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(UserLoginResponse.builder()
+                            .showMessage(true)
+                            .message("Email y contraseña son requeridos")
+                            .build());
+        }
+
+        var userOptional = userRepository.findByEmail(request.getEmail());
+        if (userOptional.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOptional.get().getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserLoginResponse.builder()
+                            .showMessage(true)
+                            .message("Credenciales inválidas")
+                            .build());
+        }
+
+        var user = userOptional.get();
+        
+        // Generar token JWT
+        String token = jwtService.generateToken(user.getEmail());
+        
+        // Crear respuesta exitosa
+        return ResponseEntity.ok(UserLoginResponse.builder()
+                .showMessage(true)
+                .message("Inicio de sesión exitoso")
+                .token(token)
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build());
+        
+    } catch (Exception e) {
+        log.error("Error durante el login del usuario", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(UserLoginResponse.builder()
+                        .showMessage(true)
+                        .message("Error en el servidor. Intente nuevamente más tarde")
+                        .build());
+    }
     }
 
     

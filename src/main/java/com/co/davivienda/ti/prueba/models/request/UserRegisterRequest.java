@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
  * UserRegisterRequest.java
  * 
  * This class represents the request object for user registration.
- * It contains fields for first name, last name, email, password, and confirm password.
- * The class is annotated with Lombok annotations to generate boilerplate code such as getters, setters, and constructors.
+ * It contains fields for first name, last name, email, password, and confirm
+ * password.
+ * The class is annotated with Lombok annotations to generate boilerplate code
+ * such as getters, setters, and constructors.
  * 
  * @author Jose Daniel Garcia Arias
  * @version 1.0.0
@@ -22,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisterRequest implements Serializable{
+public class UserRegisterRequest implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
