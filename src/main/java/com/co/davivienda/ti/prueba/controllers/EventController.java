@@ -1,6 +1,7 @@
 package com.co.davivienda.ti.prueba.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -40,5 +41,12 @@ public class EventController {
             @PathVariable Long eventId,
             @RequestBody EventUpdateDTO eventUpdateDTO) {
         return eventService.updateEvent(userId, eventId, eventUpdateDTO);
+    }
+
+    @DeleteMapping("/{userId}/{eventId}")
+    public ResponseEntity<EventResponse> deleteEvent(
+            @PathVariable String userId,
+            @PathVariable Long eventId) {
+        return eventService.deleteEvent(userId, eventId);
     }
 }
