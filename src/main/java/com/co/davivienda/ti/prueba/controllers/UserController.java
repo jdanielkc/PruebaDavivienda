@@ -14,6 +14,14 @@ import com.co.davivienda.ti.prueba.services.IUserService;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * UserController handles user-related operations such as registration and login.
+ * It provides endpoints for user registration and login functionalities.
+ *
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/users")

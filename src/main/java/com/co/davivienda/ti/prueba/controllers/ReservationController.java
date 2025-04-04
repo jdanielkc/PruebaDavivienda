@@ -18,6 +18,14 @@ import com.co.davivienda.ti.prueba.services.IReservationService;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * ReservationController handles reservation-related operations such as creating, deleting, and retrieving reservations.
+ * It provides endpoints for reservation management functionalities.
+ *
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/reservations")
@@ -25,6 +33,13 @@ public class ReservationController {
 
     private final IReservationService reservationService;
 
+    /**
+     * Endpoint to create a new reservation for a specific user.
+     * 
+     * @param userId the ID of the user
+     * @param reservationCreateDTO the reservation creation request
+     * @return the response entity containing the created reservation
+     */
     @PostMapping("/{userId}")
     public ResponseEntity<ReservationResponse> createReservation(
             @PathVariable String userId,
@@ -32,6 +47,13 @@ public class ReservationController {
         return reservationService.createReservation(userId, reservationCreateDTO);
     }
 
+    /**
+     * Endpoint to delete a reservation by its ID for a specific user.
+     * 
+     * @param userId the ID of the user
+     * @param reservationId the ID of the reservation
+     * @return the response entity indicating the deletion result
+     */
     @DeleteMapping("/{userId}/{reservationId}")
     public ResponseEntity<ReservationResponse> deleteReservation(
             @PathVariable String userId,
@@ -39,12 +61,25 @@ public class ReservationController {
         return reservationService.deleteReservation(userId, reservationId);
     }
 
+    /**
+     * Endpoint to retrieve all reservations for a specific user.
+     * 
+     * @param userId the ID of the user
+     * @return the response entity containing all reservations for the user
+     */
     @GetMapping("/{userId}")
     public ResponseEntity<AllReservationsResponse> getUserReservations(
             @PathVariable String userId) {
         return reservationService.getUserReservations(userId);
     }
 
+    /**
+     * Endpoint to retrieve a reservation by its ID for a specific user.
+     * 
+     * @param userId the ID of the user
+     * @param reservationId the ID of the reservation
+     * @return the response entity containing the reservation details
+     */
     @GetMapping("/{userId}/{reservationId}")
     public ResponseEntity<ReservationResponse> getUserReservationById(
             @PathVariable String userId,
@@ -52,6 +87,14 @@ public class ReservationController {
         return reservationService.getUserReservationById(userId, reservationId);
     }
     
+    /**
+     * Endpoint to update an existing reservation for a specific user.
+     * 
+     * @param userId the ID of the user
+     * @param reservationId the ID of the reservation
+     * @param reservationUpdateDTO the reservation update request
+     * @return the response entity containing the updated reservation details
+     */
     @PutMapping("/{userId}/{reservationId}")
     public ResponseEntity<ReservationResponse> updateReservation(
             @PathVariable String userId,
