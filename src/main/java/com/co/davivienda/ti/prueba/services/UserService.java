@@ -19,7 +19,7 @@ import com.co.davivienda.ti.prueba.models.request.UserRegisterRequest;
 import com.co.davivienda.ti.prueba.models.response.UserLoginResponse;
 import com.co.davivienda.ti.prueba.models.response.UserRegisterResponse;
 import com.co.davivienda.ti.prueba.repositories.UserRepository;
-import com.co.davivienda.ti.prueba.security.JwtService;
+import com.co.davivienda.ti.prueba.security.sevices.JwtService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -184,6 +184,7 @@ public class UserService implements IUserService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .userId(user.getId())
                 .build());
         
     } catch (Exception e) {
