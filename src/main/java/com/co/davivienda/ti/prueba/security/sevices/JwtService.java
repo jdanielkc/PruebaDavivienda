@@ -1,5 +1,6 @@
 package com.co.davivienda.ti.prueba.security.sevices;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class JwtService {
      * @return true if the token is valid and not expired, false otherwise
      */
     private Key getSigningKey() {
-        byte[] keyBytes = secretKey.getBytes();
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
