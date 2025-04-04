@@ -1,4 +1,7 @@
-# Caso de negocio (KATA)
+# Sistema de Gestión de Reservas y Eventos - DaviEventos
+
+## Caso de Negocio (KATA)
+
 Se solicita desarrollar una plataforma de eventos sencilla en donde en la página principal se puedan ver todos los eventos disponibles que pueda tener una persona (conciertos, citas médicas, restaurantes, cine y todos los eventos que usted desee) que permita a los usuarios ver eventos disponibles, registrarse y reservar espacios.
 
 - La persona debe estar registrada: ingresar e iniciar sesión con el método de autenticación que usted desee.
@@ -7,36 +10,98 @@ Se solicita desarrollar una plataforma de eventos sencilla en donde en la págin
 - Pueden utilizar IA y en la sustentación deben explicar cómo lo utilizaron.
 - El orden de la sustentación será asignado de acuerdo al orden en el que envíen el link y la hora de la sustentación será confirmada por correo.
 
+## Diseño y Arquitectura Propuesta
 
-# Diseño y arquitectura propuesta
 ![DiagramaEntidadRelacion](https://github.com/user-attachments/assets/ccb2b8e8-6bb5-4cf3-967a-11e6cf6ed87a)
 
-# __Sistema de Gestión de Reservas y Eventos__
 ## Descripción del Proyecto Backend
+
 Este proyecto implementa una API RESTful para una plataforma de gestión de eventos que permite a los usuarios ver eventos disponibles, registrarse en la plataforma, iniciar sesión y realizar reservas para diferentes tipos de eventos (conciertos, citas médicas, restaurantes, cine, etc.). El sistema valida la disponibilidad de cupos y mantiene un registro de todas las reservaciones realizadas por los usuarios.
 
-Tecnologías Implementadas
-* __Java 17__: Lenguaje base para el desarrollo del backend
-* __Spring Boot 3.4.4__: Framework para el desarrollo de aplicaciones Java
-* __Spring Security__: Para la autenticación y autorización
-* __AWS RDS (Postgresql)__: Se usa AWS para consumir la base de datos
-* __Spring Data JPA__: Para la persistencia de datos
-* __JWT (JSON Web Tokens)__: Implementación de autenticación stateless
-* __PostgreSQL__: Sistema de gestión de base de datos relacional
-* __Maven__: Gestión de dependencias y construcción del proyecto
-* __Lombok__: Reducción de código boilerplate
-* __Logback__: Framework de logging con soporte para formatos personalizados
-* __JUnit & Spring Test__: Framework de pruebas unitarias e integración
+## Tecnologías Implementadas
+
+* **Java 17**: Lenguaje base para el desarrollo del backend
+* **Spring Boot 3.4.4**: Framework para el desarrollo de aplicaciones Java
+* **Spring Security**: Para la autenticación y autorización
+* **AWS RDS (PostgreSQL)**: Se usa AWS para consumir la base de datos
+* **Spring Data JPA**: Para la persistencia de datos
+* **JWT (JSON Web Tokens)**: Implementación de autenticación stateless
+* **PostgreSQL**: Sistema de gestión de base de datos relacional
+* **Maven**: Gestión de dependencias y construcción del proyecto
+* **Lombok**: Reducción de código boilerplate
+* **Logback**: Framework de logging con soporte para formatos personalizados
+* **JUnit & Spring Test**: Framework de pruebas unitarias e integración
 
 ## Patrones de Diseño Implementados
-* DTO (Data Transfer Object): Para transferir datos entre capas.
-* Repository Pattern: Para abstraer y encapsular el acceso a datos.
-* Service Layer: Para encapsular la lógica de negocio.
-* Builder Pattern: Utilizado con Lombok para la creación de objetos.
-* Dependency Injection: Fundamental en la arquitectura Spring.
 
-## Estructura del microservicio DaviEventos
+* **DTO (Data Transfer Object)**: Para transferir datos entre capas.
+* **Repository Pattern**: Para abstraer y encapsular el acceso a datos.
+* **Service Layer**: Para encapsular la lógica de negocio.
+* **Builder Pattern**: Utilizado con Lombok para la creación de objetos.
+* **Dependency Injection**: Fundamental en la arquitectura Spring.
+
+## Buenas Prácticas Implementadas
+
+El sistema de gestión de reservas y eventos ha sido desarrollado siguiendo un conjunto integral de buenas prácticas de ingeniería de software, reforzadas con análisis estático de código mediante SpotBugs:
+
+### Arquitectura y Diseño
+
+- **Arquitectura en Capas**: Clara separación entre controladores, servicios, repositorios y entidades
+- **Principios SOLID**: Implementación de interfaces, responsabilidad única y dependencias por abstracción
+- **Patrones de Diseño**: Builder, DTO, Repository y Service con implementaciones correctamente segregadas
+- **Inmutabilidad**: DTOs inmutables para garantizar la integridad de los datos
+
+### Seguridad Reforzada
+
+- **JWT con Codificación Explícita**: Tokens JWT implementados con codificación UTF-8 explícita
+- **CSRF Configurado**: Protección CSRF habilitada para endpoints web con exclusiones específicas para APIs
+- **Password Hashing**: Almacenamiento seguro de contraseñas mediante BCrypt
+- **Validación de Entradas**: Sanitización y validación exhaustiva para prevenir inyecciones
+- **Control de Acceso**: Implementación robusta con Spring Security y verificaciones de autorización
+
+### Calidad de Código
+
+- **Análisis Estático con SpotBugs**: Integración de análisis de código para detección temprana de bugs
+- **serialVersionUID**: Implementación consistente en todas las clases serializables
+- **Documentación Javadoc**: Documentación completa y consistente en todas las clases y métodos
+- **Logging Seguro**: Patrones de logging que previenen vulnerabilidades CRLF usando placeholders
+- **Manejo Eficiente de Referencias Nulas**: Uso adecuado de Optional y validaciones preventivas
+
+### Transaccionalidad y Persistencia
+
+- **Gestión de Transacciones**: Anotaciones `@Transactional` con niveles de aislamiento apropiados
+- **JPA/Hibernate**: Mapeo objeto-relacional optimizado mediante Spring Data JPA
+- **Paginación**: Implementada para consultas de colecciones grandes
+- **Integridad Referencial**: Relaciones entre entidades correctamente definidas
+
+### Configuración y Escalabilidad
+
+- **Configuración Externalizada**: Propiedades en archivos de configuración externos
+- **Encoding UTF-8 Explícito**: Configuración consistente de codificación en todo el proyecto
+- **API RESTful**: Diseño de endpoints siguiendo estándares REST
+- **Perfiles de Entorno**: Configuraciones separadas para desarrollo, pruebas y producción
+
+### Integración Continua y Calidad
+
+- **Análisis Automático**: SpotBugs integrado en el ciclo de construcción mediante Maven
+- **Exclusiones Configuradas**: Falsos positivos gestionados mediante archivo de exclusiones específicas
+- **Reportes de Calidad**: Generación de informes detallados sobre problemas potenciales
+- **Corrección Proactiva**: Resolución sistemática de issues detectados por el análisis estático
+
+### Mejoras Implementadas Tras Análisis Estático
+
+- **Corrección de Vulnerabilidades de Seguridad**: Implementación adecuada de CSRF y codificación explícita
+- **Optimización de Manejo de Nulos**: Mejora en la gestión de valores potencialmente nulos
+- **Prevención de Inyección en Logs**: Uso consistente de marcadores de posición en mensajes de log
+- **Serialización Robusta**: Adición de serialVersionUID en todas las clases serializables
+- **Reducción de Redundancias**: Eliminación de verificaciones redundantes de nulidad
+
+El uso de SpotBugs como herramienta de análisis estático de código ha permitido identificar y corregir proactivamente problemas potenciales antes de que puedan manifestarse en entornos de producción, contribuyendo significativamente a la robustez y seguridad del sistema.
+
+## Estructura del Microservicio DaviEventos
+
 El proyecto sigue una arquitectura en capas bien definida:
+
 
 ```
 src/
@@ -62,26 +127,33 @@ src/
 │       └── import.sql            # Datos iniciales
 ```
 
+
 ## Características Principales
-1. Gestión de Usuarios
-    - Registro de nuevos usuarios
-    - Inicio de sesión con JWT
-    - Validación de datos de usuario
-2. Gestión de Categorías
-    - Listado de todas las categorías disponibles
-    - Creación de nuevas categorías
-3. Gestión de Eventos
-    - Listado de eventos disponibles
-    - Creación, actualización y eliminación de eventos
-    - Filtrado de eventos por categoría
-4. Sistema de Reservas
-    - Creación de reservas para eventos
-    - Visualización de reservas por usuario
-    - Actualización del estado de reservas (PENDIENTE, CONFIRMADA, CANCELADA)
-    - Eliminación de reservas
-    - Validación para prevenir reservas en eventos completos
+
+### 1. Gestión de Usuarios
+- Registro de nuevos usuarios
+- Inicio de sesión con JWT
+- Validación de datos de usuario
+
+### 2. Gestión de Categorías
+- Listado de todas las categorías disponibles
+- Creación de nuevas categorías
+
+### 3. Gestión de Eventos
+- Listado de eventos disponibles
+- Creación, actualización y eliminación de eventos
+- Filtrado de eventos por categoría
+
+### 4. Sistema de Reservas
+- Creación de reservas para eventos
+- Visualización de reservas por usuario
+- Actualización del estado de reservas (PENDIENTE, CONFIRMADA, CANCELADA)
+- Eliminación de reservas
+- Validación para prevenir reservas en eventos completos
+
 ## API Endpoints
-Autenticación
+
+### Autenticación
 ```
 POST /api/users/register        # Registro de usuarios
 POST /api/users/login           # Inicio de sesión
@@ -108,28 +180,31 @@ PUT  /api/reservations/{userId}/{reservationId} # Actualizar una reserva
 DELETE /api/reservations/{userId}/{reservationId} # Eliminar una reserva
 ```
 ## Seguridad Implementada
+
 El sistema implementa un mecanismo de seguridad basado en tokens JWT:
 
-1. __Autenticación__: Los usuarios se autentican enviando sus credenciales.
-2. __Token JWT__: El servidor genera un token JWT firmado.
-3. __Autorización__: El token debe enviarse en el encabezado de las solicitudes posteriores.
-4. __Validación__: Cada solicitud es validada verificando el token antes de procesarla.
-5. __Contraseñas__: Las contraseñas se almacenan con encriptación mediante BCrypt.
-## Validaciones del Sistema
-* __Reservas__: Verifica que el evento tenga capacidad disponible antes de permitir una reserva.
-* __Usuarios__: Validación de formato de correo electrónico y campos obligatorios.
-* __Eventos__: Validación de capacidad, fechas y campos obligatorios.
+1. **Autenticación**: Los usuarios se autentican enviando sus credenciales.
+2. **Token JWT**: El servidor genera un token JWT firmado.
+3. **Autorización**: El token debe enviarse en el encabezado de las solicitudes posteriores.
+4. **Validación**: Cada solicitud es validada verificando el token antes de procesarla.
+5. **Contraseñas**: Las contraseñas se almacenan con encriptación mediante BCrypt.
 
+## Validaciones del Sistema
+
+- **Reservas**: Verifica que el evento tenga capacidad disponible antes de permitir una reserva.
+- **Usuarios**: Validación de formato de correo electrónico y campos obligatorios.
+- **Eventos**: Validación de capacidad, fechas y campos obligatorios.
 
 ## Base de Datos
-El modelo de datos incluye las siguientes entidades principales:
 
-* __User__: Almacena información de usuarios registrados.
-* __Category__: Categorías para clasificar los eventos.
-* __Event__: Información detallada de eventos.
-* __Reservation__: Registros de reservas realizadas.
+El modelo de datos incluye las siguientes entidades principales:
+- **User**: Almacena información de usuarios registrados.
+- **Category**: Categorías para clasificar los eventos.
+- **Event**: Información detallada de eventos.
+- **Reservation**: Registros de reservas realizadas.
 ## Uso de la API
-Ejemplo de registro de usuario:
+
+### Ejemplo de registro de usuario:
 ```
 // POST /api/users/register
 {
