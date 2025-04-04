@@ -17,6 +17,6 @@ import com.co.davivienda.ti.prueba.entities.Reservation;
  * @since 2025/04/03
  */
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, BigInteger> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
 }

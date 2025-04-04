@@ -17,6 +17,6 @@ import com.co.davivienda.ti.prueba.entities.Category;
  * @since 2025/04/03
  */
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, BigInteger> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 }

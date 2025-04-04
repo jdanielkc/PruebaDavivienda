@@ -17,6 +17,6 @@ import com.co.davivienda.ti.prueba.entities.User;
  * @since 2025/04/03
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, BigInteger> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
 }

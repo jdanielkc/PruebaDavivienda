@@ -35,7 +35,7 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private BigInteger id;
+    private Long id;
 
     @Column(name = "reservation_date")
     private String reservationDate;

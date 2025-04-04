@@ -17,6 +17,6 @@ import com.co.davivienda.ti.prueba.entities.Event;
  * @since 2025/04/03
  */
 @Repository
-public interface EventRepository extends JpaRepository<Event, BigInteger> {
+public interface EventRepository extends JpaRepository<Event, Long> {
 
 }
