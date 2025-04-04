@@ -1,6 +1,5 @@
 package com.co.davivienda.ti.prueba.entities;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -37,6 +36,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "email", unique = true)
+    private String email;
 
     @Column(name = "first_name")
     private String firstName;

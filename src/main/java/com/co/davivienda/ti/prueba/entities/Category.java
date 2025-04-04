@@ -1,6 +1,5 @@
 package com.co.davivienda.ti.prueba.entities;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import jakarta.persistence.Column;
