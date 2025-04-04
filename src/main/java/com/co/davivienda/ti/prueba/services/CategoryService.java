@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.co.davivienda.ti.prueba.entities.Category;
+import com.co.davivienda.ti.prueba.models.dto.CategoryCreateDTO;
 import com.co.davivienda.ti.prueba.models.dto.CategoryDTO;
 import com.co.davivienda.ti.prueba.models.response.AllCategoriesResponse;
+import com.co.davivienda.ti.prueba.models.response.CategoryResponse;
 import com.co.davivienda.ti.prueba.repositories.CategoryRepository;
 
 import lombok.AllArgsConstructor;
@@ -60,5 +62,48 @@ public class CategoryService implements ICategoryService {
                 .name(category.getName())
                 .description(category.getDescription())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<CategoryResponse> createCategory(CategoryCreateDTO categoryCreateDTO) {
+        try {
+            // Validar campos requeridos
+            if (categoryCreateDTO.getName() == null || categoryCreateDTO.getName().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(CategoryResponse.builder()
+                                .showMessage(true)
+                                .message("El nombre de la categoría es obligatorio")
+                                .build());
+            }
+
+            // Crear nueva categoría
+            Category newCategory = Category.builder()
+                    .name(categoryCreateDTO.getName())
+                    .description(categoryCreateDTO.getDescription())
+                    .build();
+
+            // Guardar nueva categoría
+            Category savedCategory = categoryRepository.save(newCategory);
+
+            // Convertir a DTO
+            CategoryDTO categoryDTO = convertToDTO(savedCategory);
+
+            // Construir respuesta
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(CategoryResponse.builder()
+                            .category(categoryDTO)
+                            .showMessage(true)
+                            .message("Categoría creada exitosamente")
+                            .build());
+
+        } catch (Exception e) {
+            log.error("Error al crear la categoría", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CategoryResponse.builder()
+                            .showMessage(true)
+                            .message("Error al crear la categoría")
+                            .build());
+        }
     }
 }
