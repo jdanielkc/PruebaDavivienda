@@ -3,9 +3,12 @@ package com.co.davivienda.ti.prueba.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.co.davivienda.ti.prueba.models.dto.EventUpdateDTO;
 import com.co.davivienda.ti.prueba.models.response.AllEventsResponse;
 import com.co.davivienda.ti.prueba.models.response.EventResponse;
 import com.co.davivienda.ti.prueba.services.IEventService;
@@ -29,5 +32,13 @@ public class EventController {
             @PathVariable String userId,
             @PathVariable Long eventId) {
         return eventService.getEventById(userId, eventId);
+    }
+
+    @PutMapping("/{userId}/{eventId}")
+    public ResponseEntity<EventResponse> updateEvent(
+            @PathVariable String userId,
+            @PathVariable Long eventId,
+            @RequestBody EventUpdateDTO eventUpdateDTO) {
+        return eventService.updateEvent(userId, eventId, eventUpdateDTO);
     }
 }
