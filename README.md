@@ -28,7 +28,12 @@ Tecnologías Implementadas
 * __Logback__: Framework de logging con soporte para formatos personalizados
 * __JUnit & Spring Test__: Framework de pruebas unitarias e integración
 
-
+## Patrones de Diseño Implementados
+* DTO (Data Transfer Object): Para transferir datos entre capas.
+* Repository Pattern: Para abstraer y encapsular el acceso a datos.
+* Service Layer: Para encapsular la lógica de negocio.
+* Builder Pattern: Utilizado con Lombok para la creación de objetos.
+* Dependency Injection: Fundamental en la arquitectura Spring.
 
 ## Estructura del microservicio DaviEventos
 El proyecto sigue una arquitectura en capas bien definida:
@@ -159,13 +164,6 @@ El proyecto utiliza Maven para la gestión de dependencias. Las principales conf
 
 ## Perfiles de Ejecución
 El sistema está configurado para soportar diferentes entornos de ejecución (desarrollo, pruebas, producción) mediante perfiles de Spring Boot.
-
-## Patrones de Diseño Implementados
-* DTO (Data Transfer Object): Para transferir datos entre capas.
-* Repository Pattern: Para abstraer y encapsular el acceso a datos.
-* Service Layer: Para encapsular la lógica de negocio.
-* Builder Pattern: Utilizado con Lombok para la creación de objetos.
-* Dependency Injection: Fundamental en la arquitectura Spring.
 
 ## Documentación
 El proyecto utiliza Javadoc para documentar sus componentes. La documentación completa se puede generar con:
