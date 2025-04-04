@@ -1,5 +1,9 @@
 package com.co.davivienda.ti.prueba.models.response;
 
+import java.util.List;
+
+import com.co.davivienda.ti.prueba.models.dto.EventDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,17 +14,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-public class UserLoginResponse extends BaseResponse {
+@EqualsAndHashCode(callSuper = true)
+public class AllEventsResponse extends BaseResponse {
 
-    private String token;
+    private List<EventDTO> events;
     
-    private String email;
-
-    private String firstName;
-    
-    private String lastName;
-
-    private Long userId;
-
 }

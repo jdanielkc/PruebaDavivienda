@@ -1,4 +1,4 @@
-package com.co.davivienda.ti.prueba.security;
+package com.co.davivienda.ti.prueba.security.sevices;
 
 import com.co.davivienda.ti.prueba.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
