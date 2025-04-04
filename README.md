@@ -62,7 +62,6 @@ El sistema de gestión de reservas y eventos ha sido desarrollado siguiendo un c
 ### Calidad de Código
 
 - **Análisis Estático con SpotBugs**: Integración de análisis de código para detección temprana de bugs
-- **serialVersionUID**: Implementación consistente en todas las clases serializables
 - **Documentación Javadoc**: Documentación completa y consistente en todas las clases y métodos
 - **Logging Seguro**: Patrones de logging que previenen vulnerabilidades CRLF usando placeholders
 - **Manejo Eficiente de Referencias Nulas**: Uso adecuado de Optional y validaciones preventivas
@@ -91,10 +90,6 @@ El sistema de gestión de reservas y eventos ha sido desarrollado siguiendo un c
 ### Mejoras Implementadas Tras Análisis Estático
 
 - **Corrección de Vulnerabilidades de Seguridad**: Implementación adecuada de CSRF y codificación explícita
-- **Optimización de Manejo de Nulos**: Mejora en la gestión de valores potencialmente nulos
-- **Prevención de Inyección en Logs**: Uso consistente de marcadores de posición en mensajes de log
-- **Serialización Robusta**: Adición de serialVersionUID en todas las clases serializables
-- **Reducción de Redundancias**: Eliminación de verificaciones redundantes de nulidad
 
 El uso de SpotBugs como herramienta de análisis estático de código ha permitido identificar y corregir proactivamente problemas potenciales antes de que puedan manifestarse en entornos de producción, contribuyendo significativamente a la robustez y seguridad del sistema.
 
