@@ -28,4 +28,6 @@ public class EventDTO implements Serializable {
     private LocalDate eventDate;
     private Long categoryId;
     private String categoryName;
+    private Integer capacity;
+    private String location;
 }

@@ -98,6 +98,8 @@ public class EventService implements IEventService {
                 .description(event.getDescription()).eventDate(event.getEventDate())
                 .categoryId(event.getCategory() != null ? event.getCategory().getId() : null)
                 .categoryName(event.getCategory() != null ? event.getCategory().getName() : null)
+                .capacity(event.getCapacity())
+                .location(event.getLocation())
                 .build();
     }
 
