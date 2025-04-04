@@ -8,6 +8,15 @@ import com.co.davivienda.ti.prueba.models.dto.ReservationUpdateDTO;
 import com.co.davivienda.ti.prueba.models.response.AllReservationsResponse;
 import com.co.davivienda.ti.prueba.models.response.ReservationResponse;
 
+/**
+ * IReservationService is an interface that defines the contract for reservation-related operations. It
+ * provides methods to create, delete, update, and retrieve reservations. This interface is
+ * implemented by the ReservationService class.
+ * 
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 public interface IReservationService {
 
     @Transactional

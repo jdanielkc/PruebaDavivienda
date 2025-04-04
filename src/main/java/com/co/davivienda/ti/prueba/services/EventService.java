@@ -22,6 +22,17 @@ import com.co.davivienda.ti.prueba.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * EventService is a service class that handles event-related operations. It provides methods to
+ * retrieve all events, get an event by ID, update an event, delete an event, and create a new
+ * event. This class is annotated with @Service to indicate that it is a Spring service component.
+ * It uses the EventRepository, UserRepository, and CategoryRepository to interact with the
+ * database.
+ *
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -36,8 +47,8 @@ public class EventService implements IEventService {
     private final CategoryRepository categoryRepository;
 
     /**
-     * Retrieves all events from the database and returns them in a response entity.
-     * Validates the user ID before fetching the events.
+     * Retrieves all events from the database and returns them in a response entity. Validates the
+     * user ID before fetching the events.
      *
      * @param userId The ID of the user requesting the events.
      * @return A ResponseEntity containing the list of events or an error message.
@@ -55,33 +66,24 @@ public class EventService implements IEventService {
             Long userIdLong = Long.parseLong(userId);
             if (!userRepository.existsById(userIdLong)) {
                 log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(AllEventsResponse.builder()
-                                .showMessage(true)
-                                .message(ERROR_USER_NOT_FOUND)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(AllEventsResponse.builder()
+                        .showMessage(true).message(ERROR_USER_NOT_FOUND).build());
             }
 
             // Get all events
             List<Event> events = eventRepository.findAll();
 
             // Convert events to DTOs
-            List<EventDTO> eventDTOs = events.stream()
-                    .map(this::convertToDTO).toList();
+            List<EventDTO> eventDTOs = events.stream().map(this::convertToDTO).toList();
 
             // Build and return the response
-            return ResponseEntity.ok(AllEventsResponse.builder()
-                    .events(eventDTOs)
-                    .showMessage(false)
-                    .build());
+            return ResponseEntity
+                    .ok(AllEventsResponse.builder().events(eventDTOs).showMessage(false).build());
 
         } catch (Exception e) {
             log.error(ERROR_GETTING_EVENTS, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(AllEventsResponse.builder()
-                            .showMessage(true)
-                            .message(ERROR_GETTING_EVENTS)
-                            .build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AllEventsResponse
+                    .builder().showMessage(true).message(ERROR_GETTING_EVENTS).build());
         }
     }
 
@@ -92,11 +94,8 @@ public class EventService implements IEventService {
      * @return The converted EventDTO.
      */
     private EventDTO convertToDTO(Event event) {
-        return EventDTO.builder()
-                .id(event.getId())
-                .name(event.getTitle())
-                .description(event.getDescription())
-                .eventDate(event.getEventDate())
+        return EventDTO.builder().id(event.getId()).name(event.getTitle())
+                .description(event.getDescription()).eventDate(event.getEventDate())
                 .categoryId(event.getCategory() != null ? event.getCategory().getId() : null)
                 .categoryName(event.getCategory() != null ? event.getCategory().getName() : null)
                 .build();
@@ -106,8 +105,7 @@ public class EventService implements IEventService {
      * Validates and parses the user ID from string to Long.
      *
      * @param userId The user ID as string to validate.
-     * @return Optional containing error response if validation fails, or empty if
-     *         successful.
+     * @return Optional containing error response if validation fails, or empty if successful.
      */
     private Optional<ResponseEntity<AllEventsResponse>> validateUserId(String userId) {
         try {
@@ -115,19 +113,16 @@ public class EventService implements IEventService {
             return Optional.empty();
         } catch (NumberFormatException e) {
             log.warn(ERROR_INVALID_USER_ID + ": {}", userId);
-            return Optional.of(ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(AllEventsResponse.builder()
-                            .showMessage(true)
-                            .message(ERROR_INVALID_USER_ID)
-                            .build()));
+            return Optional.of(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(AllEventsResponse
+                    .builder().showMessage(true).message(ERROR_INVALID_USER_ID).build()));
         }
     }
 
     /**
-     * Retrieves an event by its ID and user ID, returning it in a response entity.
-     * Validates the user ID before fetching the event.
+     * Retrieves an event by its ID and user ID, returning it in a response entity. Validates the
+     * user ID before fetching the event.
      *
-     * @param userId  The ID of the user requesting the event.
+     * @param userId The ID of the user requesting the event.
      * @param eventId The ID of the event to retrieve.
      * @return A ResponseEntity containing the event or an error message.
      */
@@ -136,7 +131,8 @@ public class EventService implements IEventService {
     public ResponseEntity<EventResponse> getEventById(String userId, Long eventId) {
         try {
             // Validations
-            Optional<ResponseEntity<EventResponse>> validationError = validateUserIdForEvent(userId);
+            Optional<ResponseEntity<EventResponse>> validationError =
+                    validateUserIdForEvent(userId);
             if (validationError.isPresent()) {
                 return validationError.get();
             }
@@ -144,11 +140,8 @@ public class EventService implements IEventService {
             Long userIdLong = Long.parseLong(userId);
             if (!userRepository.existsById(userIdLong)) {
                 log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(ERROR_USER_NOT_FOUND)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(EventResponse.builder()
+                        .showMessage(true).message(ERROR_USER_NOT_FOUND).build());
             }
 
             // Get event by ID
@@ -157,29 +150,21 @@ public class EventService implements IEventService {
             if (eventOptional.isEmpty()) {
                 String errorMessage = "Evento no encontrado con ID: " + eventId;
                 log.warn(errorMessage);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(errorMessage)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        EventResponse.builder().showMessage(true).message(errorMessage).build());
             }
 
             // Convert event to DTO
             EventDTO eventDTO = convertToDTO(eventOptional.get());
 
             // Build and return the response
-            return ResponseEntity.ok(EventResponse.builder()
-                    .event(eventDTO)
-                    .showMessage(false)
-                    .build());
+            return ResponseEntity
+                    .ok(EventResponse.builder().event(eventDTO).showMessage(false).build());
 
         } catch (Exception e) {
             log.error("Error al obtener el evento con ID: " + eventId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(EventResponse.builder()
-                            .showMessage(true)
-                            .message("Error al obtener el evento")
-                            .build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(EventResponse
+                    .builder().showMessage(true).message("Error al obtener el evento").build());
         }
     }
 
@@ -187,8 +172,7 @@ public class EventService implements IEventService {
      * Validates and parses the user ID from string to Long for event operations.
      *
      * @param userId The user ID as string to validate.
-     * @return Optional containing error response if validation fails, or empty if
-     *         successful.
+     * @return Optional containing error response if validation fails, or empty if successful.
      */
     private Optional<ResponseEntity<EventResponse>> validateUserIdForEvent(String userId) {
         try {
@@ -196,29 +180,28 @@ public class EventService implements IEventService {
             return Optional.empty();
         } catch (NumberFormatException e) {
             log.warn(ERROR_INVALID_USER_ID + ": {}", userId);
-            return Optional.of(ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(EventResponse.builder()
-                            .showMessage(true)
-                            .message(ERROR_INVALID_USER_ID)
-                            .build()));
+            return Optional.of(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(EventResponse
+                    .builder().showMessage(true).message(ERROR_INVALID_USER_ID).build()));
         }
     }
 
     /**
-     * Updates an existing event with the provided data.
-     * Validates the user ID before updating the event.
+     * Updates an existing event with the provided data. Validates the user ID before updating the
+     * event.
      *
-     * @param userId         The ID of the user requesting the update.
-     * @param eventId        The ID of the event to update.
+     * @param userId The ID of the user requesting the update.
+     * @param eventId The ID of the event to update.
      * @param eventUpdateDTO Data with which to update the event.
      * @return A ResponseEntity containing the updated event or an error message.
      */
     @Override
     @Transactional
-    public ResponseEntity<EventResponse> updateEvent(String userId, Long eventId, EventUpdateDTO eventUpdateDTO) {
+    public ResponseEntity<EventResponse> updateEvent(String userId, Long eventId,
+            EventUpdateDTO eventUpdateDTO) {
         try {
             // Validations
-            Optional<ResponseEntity<EventResponse>> validationError = validateUserIdForEvent(userId);
+            Optional<ResponseEntity<EventResponse>> validationError =
+                    validateUserIdForEvent(userId);
             if (validationError.isPresent()) {
                 return validationError.get();
             }
@@ -226,11 +209,8 @@ public class EventService implements IEventService {
             Long userIdLong = Long.parseLong(userId);
             if (!userRepository.existsById(userIdLong)) {
                 log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(ERROR_USER_NOT_FOUND)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(EventResponse.builder()
+                        .showMessage(true).message(ERROR_USER_NOT_FOUND).build());
             }
 
             // Get event by ID
@@ -239,14 +219,9 @@ public class EventService implements IEventService {
             if (eventOptional.isEmpty()) {
                 String errorMessage = "Evento no encontrado con ID: " + eventId;
                 log.warn(errorMessage);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(errorMessage)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        EventResponse.builder().showMessage(true).message(errorMessage).build());
             }
-
-            // Update event
             Event event = eventOptional.get();
 
             if (eventUpdateDTO.getTitle() != null) {
@@ -265,40 +240,28 @@ public class EventService implements IEventService {
                 event.setCapacity(eventUpdateDTO.getCapacity());
             }
             if (eventUpdateDTO.getCategoryId() != null) {
-                // Get category by ID - you might want to add validation here
-                event.setCategory(categoryRepository.findById(eventUpdateDTO.getCategoryId()).orElse(null));
+                event.setCategory(
+                        categoryRepository.findById(eventUpdateDTO.getCategoryId()).orElse(null));
             }
 
-            // Update last modified date
             event.setUpdateDate(LocalDate.now());
-
-            // Save updated event
             Event updatedEvent = eventRepository.save(event);
-
-            // Convert to DTO and return
             EventDTO eventDTO = convertToDTO(updatedEvent);
 
-            return ResponseEntity.ok(EventResponse.builder()
-                    .event(eventDTO)
-                    .showMessage(true)
-                    .message("Evento actualizado exitosamente")
-                    .build());
+            return ResponseEntity.ok(EventResponse.builder().event(eventDTO).showMessage(true)
+                    .message("Evento actualizado exitosamente").build());
 
         } catch (Exception e) {
             log.error("Error al actualizar el evento con ID: " + eventId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(EventResponse.builder()
-                            .showMessage(true)
-                            .message("Error al actualizar el evento")
-                            .build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(EventResponse
+                    .builder().showMessage(true).message("Error al actualizar el evento").build());
         }
     }
 
     /**
-     * Deletes an event by its ID.
-     * Validates the user ID before deleting the event.
+     * Deletes an event by its ID. Validates the user ID before deleting the event.
      *
-     * @param userId  The ID of the user requesting the deletion.
+     * @param userId The ID of the user requesting the deletion.
      * @param eventId The ID of the event to delete.
      * @return A ResponseEntity containing success message or error information.
      */
@@ -307,7 +270,8 @@ public class EventService implements IEventService {
     public ResponseEntity<EventResponse> deleteEvent(String userId, Long eventId) {
         try {
             // Validations
-            Optional<ResponseEntity<EventResponse>> validationError = validateUserIdForEvent(userId);
+            Optional<ResponseEntity<EventResponse>> validationError =
+                    validateUserIdForEvent(userId);
             if (validationError.isPresent()) {
                 return validationError.get();
             }
@@ -315,11 +279,8 @@ public class EventService implements IEventService {
             Long userIdLong = Long.parseLong(userId);
             if (!userRepository.existsById(userIdLong)) {
                 log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(ERROR_USER_NOT_FOUND)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(EventResponse.builder()
+                        .showMessage(true).message(ERROR_USER_NOT_FOUND).build());
             }
 
             // Get event by ID
@@ -328,11 +289,8 @@ public class EventService implements IEventService {
             if (eventOptional.isEmpty()) {
                 String errorMessage = "Evento no encontrado con ID: " + eventId;
                 log.warn(errorMessage);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(errorMessage)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        EventResponse.builder().showMessage(true).message(errorMessage).build());
             }
 
             // Delete event
@@ -340,38 +298,30 @@ public class EventService implements IEventService {
 
             // Check if the event has reservations associated with it
             if (event.getReservations() != null && !event.getReservations().isEmpty()) {
-                String errorMessage = "No se puede eliminar el evento porque tiene reservas asociadas";
+                String errorMessage =
+                        "No se puede eliminar el evento porque tiene reservas asociadas";
                 log.warn(errorMessage + " - Evento ID: {}", eventId);
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(errorMessage)
-                                .build());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                        EventResponse.builder().showMessage(true).message(errorMessage).build());
             }
 
             // Delete the event
             eventRepository.delete(event);
 
-            return ResponseEntity.ok(EventResponse.builder()
-                    .showMessage(true)
-                    .message("Evento eliminado exitosamente")
-                    .build());
+            return ResponseEntity.ok(EventResponse.builder().showMessage(true)
+                    .message("Evento eliminado exitosamente").build());
 
         } catch (Exception e) {
             log.error("Error al eliminar el evento con ID: " + eventId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(EventResponse.builder()
-                            .showMessage(true)
-                            .message("Error al eliminar el evento")
-                            .build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(EventResponse
+                    .builder().showMessage(true).message("Error al eliminar el evento").build());
         }
     }
 
     /**
-     * Creates a new event with the provided data.
-     * Validates the user ID before creating the event.
+     * Creates a new event with the provided data. Validates the user ID before creating the event.
      *
-     * @param userId         The ID of the user creating the event.
+     * @param userId The ID of the user creating the event.
      * @param eventCreateDTO Data for the new event.
      * @return A ResponseEntity containing the created event or an error message.
      */
@@ -380,7 +330,8 @@ public class EventService implements IEventService {
     public ResponseEntity<EventResponse> createEvent(String userId, EventCreateDTO eventCreateDTO) {
         try {
             // Validations
-            Optional<ResponseEntity<EventResponse>> validationError = validateUserIdForEvent(userId);
+            Optional<ResponseEntity<EventResponse>> validationError =
+                    validateUserIdForEvent(userId);
             if (validationError.isPresent()) {
                 return validationError.get();
             }
@@ -388,36 +339,27 @@ public class EventService implements IEventService {
             Long userIdLong = Long.parseLong(userId);
             if (!userRepository.existsById(userIdLong)) {
                 log.warn(ERROR_USER_NOT_FOUND + " con ID: {}", userId);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message(ERROR_USER_NOT_FOUND)
-                                .build());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(EventResponse.builder()
+                        .showMessage(true).message(ERROR_USER_NOT_FOUND).build());
             }
 
             // Validate required fields
             if (eventCreateDTO.getTitle() == null || eventCreateDTO.getTitle().trim().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(EventResponse.builder()
-                                .showMessage(true)
-                                .message("El título del evento es obligatorio")
-                                .build());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(EventResponse.builder()
+                        .showMessage(true).message("El título del evento es obligatorio").build());
             }
 
             // Create new event
-            Event newEvent = Event.builder()
-                    .title(eventCreateDTO.getTitle())
+            Event newEvent = Event.builder().title(eventCreateDTO.getTitle())
                     .description(eventCreateDTO.getDescription())
-                    .eventDate(eventCreateDTO.getEventDate())
-                    .location(eventCreateDTO.getLocation())
-                    .capacity(eventCreateDTO.getCapacity())
-                    .createDate(LocalDate.now())
-                    .updateDate(LocalDate.now())
-                    .build();
+                    .eventDate(eventCreateDTO.getEventDate()).location(eventCreateDTO.getLocation())
+                    .capacity(eventCreateDTO.getCapacity()).createDate(LocalDate.now())
+                    .updateDate(LocalDate.now()).build();
 
             // Set category if provided
             if (eventCreateDTO.getCategoryId() != null) {
-                newEvent.setCategory(categoryRepository.findById(eventCreateDTO.getCategoryId()).orElse(null));
+                newEvent.setCategory(
+                        categoryRepository.findById(eventCreateDTO.getCategoryId()).orElse(null));
             }
 
             // Save new event
@@ -427,19 +369,13 @@ public class EventService implements IEventService {
             EventDTO eventDTO = convertToDTO(savedEvent);
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(EventResponse.builder()
-                            .event(eventDTO)
-                            .showMessage(true)
-                            .message("Evento creado exitosamente")
-                            .build());
+                    .body(EventResponse.builder().event(eventDTO).showMessage(true)
+                            .message("Evento creado exitosamente").build());
 
         } catch (Exception e) {
             log.error("Error al crear el evento", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(EventResponse.builder()
-                            .showMessage(true)
-                            .message("Error al crear el evento")
-                            .build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(EventResponse
+                    .builder().showMessage(true).message("Error al crear el evento").build());
         }
     }
 }

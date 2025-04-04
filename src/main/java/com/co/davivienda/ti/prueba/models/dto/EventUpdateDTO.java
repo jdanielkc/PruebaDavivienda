@@ -8,6 +8,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * EventUpdateDTO is a Data Transfer Object (DTO) used for updating an existing event.
+ * It contains the necessary fields for event update, such as title, description, event date, location, capacity, and category ID.
+ * This class is annotated with Lombok annotations to generate boilerplate code like getters, setters, and constructors.
+ * 
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 @Data
 @Builder
 @NoArgsConstructor
