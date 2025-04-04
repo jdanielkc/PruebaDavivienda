@@ -15,6 +15,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Category entity class representing a category in the system.
+ * This class is annotated with JPA annotations to map it to the database table "category".
+ * It contains fields for category attributes and relationships with other entities.
+ * 
+ * @author Jose Daniel Garcia Arias
+ * @version 1.0.0
+ * @since 2025/04/03
+ */
 @Data
 @Entity
 @Builder
@@ -26,7 +35,10 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private BigInteger id;
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "description")
     private String description;
